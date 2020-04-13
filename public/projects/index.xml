@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projects on Trevor Bhattacharya</title>
+    <link>https://trevorb.io/projects/</link>
+    <description>Recent content in Projects on Trevor Bhattacharya</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    
+	<atom:link href="https://trevorb.io/projects/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Leadership and Railroad Projects</title>
+      <link>https://trevorb.io/projects/railroad/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://trevorb.io/projects/railroad/</guid>
+      <description>Terminal Process Control I traveled across BNSF Railway&#39;s system developing and testing Terminal Process Control (TPC) in BNSF&#39;s major rail hubs. My experience with this project inspired me to pursue a full-time career in data science!
+TPC is a modern control system for automatically sorting train cars at classification (hump) yards. 160-ton train cars are rolled down a hill while TPC controls their speed and routes them to a destination. The largest yards process over 2000 cars per day!</description>
+    </item>
+    
+    <item>
+      <title>Predicting Scooter Utilization in Python</title>
+      <link>https://trevorb.io/projects/scooters/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://trevorb.io/projects/scooters/</guid>
+      <description>Predicting Scooter utilization Using Machine learning to improve strategic placement of scooters in Austin, TX. Check out the github page.
+Project description: Now ubiquitous, the electric scooter cruises through bike lanes and sidewalks of every major US city. In order to stay competitive, operating companies need to ensure their scooters or e-bikes are highly utilized. They must ensure that their fleets are in place to meet demand. Using data provided by the city of Austin, TX, I implemented various machine learning strategies to predict optimal fleet distribution.</description>
+    </item>
+    
+    <item>
+      <title>Recognizing Bengali Graphemes using CNNs</title>
+      <link>https://trevorb.io/projects/bengali/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://trevorb.io/projects/bengali/</guid>
+      <description>Introduction Unlike English, Bengali letters are not separated symbols, but rather a combination of different types of symbols. Bengali ‘letters’ are a combination of at least one of the following: consonant, vowel diacritic, and a consonant diacritic. The combination of these can result in approximately 13,000 possible graphemes.
+The aim of this project is to classify the dataset of handwritten graphemes. This allows computer vision to read Bengali words, with an alphabet that (to me, a native English-speaker) is much more complicated than the latin alphabet.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Trevor Bhattacharya">
+<meta name="keywords" content="Trevor Bhattacharya, Data Science,Project Management, PMP">
+
+<base href="https://trevorb.io">
+
+<title>
+  Trevor Bhattacharya - Predicting Scooter Utilization in Python 
+</title>
+
+<meta name="generator" content="Hugo 0.62.2" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="https://trevorb.io/css/main.css">
+<link rel="stylesheet" href="https://trevorb.io/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Predicting Scooter Utilization in Python</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+       
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#predicting-scooter-utilization">Predicting Scooter utilization</a>
+      <ul>
+        <li><a href="#importing-and-cleaning-the-data">Importing and Cleaning the data</a></li>
+        <li><a href="#exploratory-data-analysis">Exploratory Data Analysis</a></li>
+        <li><a href="#machine-learning-analysis">Machine Learning Analysis</a></li>
+        <li><a href="#business-impact">Business Impact</a></li>
+        <li><a href="#future-enhancements">Future Enhancements</a></li>
+        <li><a href="#resources">Resources</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    
+    <p><img src="img/austin_scooter.jpg" alt="image"></p>
+<h2 id="predicting-scooter-utilization">Predicting Scooter utilization</h2>
+<p>Using Machine learning to improve strategic placement of scooters in Austin, TX. Check out the <a href="https://github.com/trevbhatt/predicting_scooter_utilization">github page</a>.</p>
+<p><strong>Project description:</strong> Now ubiquitous, the electric scooter cruises through bike lanes and sidewalks of every major US city.  In order to stay competitive, operating companies need to ensure their scooters or e-bikes are highly utilized.  They must ensure that their fleets are in place to meet demand.  Using data provided by the city of Austin, TX, I implemented various machine learning strategies to predict optimal fleet distribution.  To jump directly to the Facebook Prophet model, <a href="#time-series-and-facebook-prophet">click here</a>.</p>
+<h3 id="importing-and-cleaning-the-data">Importing and Cleaning the data</h3>
+<p>Below are the steps I took to import, wrangle, and clean the data.  The Jupyter notebook can be found <a href="https://github.com/trevbhatt/predicting_scooter_utilization/blob/master/data_wrangling.ipynb">here</a>.</p>
+<p>The city of Austin publishes data for every ride taken on a scooter within the city limits.  This data is provided to the city by all of the authorised micromobility service operators: Bird, Jump (Uber), Lime, Lyft, OjO, Spin, and Wheels.  Because not all of these providers audit their data before providing it to the city, some cleaning is required to use the data.</p>
+<p>Below are the steps I took to import, wrangle, and clean the data.  The Jupyter notebook can be found <a href="https://github.com/trevbhatt/predicting_scooter_utilization/blob/master/data_wrangling.ipynb">here</a>.</p>
+<ol>
+<li>Imported the data from the csv file downloaded from the City of Austin: <a href="https://data.austintexas.gov/d/7d8e-dm7r">https://data.austintexas.gov/d/7d8e-dm7r</a></li>
+</ol>
+<ul>
+<li>Size: 6,848,950 rows x 16 columns (each row represents a trip)</li>
+<li>Timeframe: April 2018 to September 2019</li>
+<li>Columns:
+<ul>
+<li>ID: A unique ID for each trip (string)</li>
+<li>Device ID: A unique ID for the device used (string)</li>
+<li>Vehicle Type: Bicycle or Scooter (string)</li>
+<li>Trip Duration: time length of trip in seconds (float)</li>
+<li>Trip Distance: distance traveled in meters (float)</li>
+<li>Start Time: trip start time (datetime)</li>
+<li>End Time: trip end time (datetime)</li>
+<li>Modified Date: datetime at which the record was last modified, typically when the data was extracted (datetime)</li>
+<li>Month: Month when the trip occurred (integer)</li>
+<li>Day of week: day of the week when the trip occurred, Sunday = 0 (integer)</li>
+<li>Council District (Start): City council district in which the trip started (string)</li>
+<li>Council District (End): City council district in which the trip ended (string)</li>
+<li>Year: Year when trip occurred (integer)</li>
+<li>Census Tract Start: Starting Neighborhood GEOID number from US 2010 Census Tract (string). Note&ndash;this is an 11-digit number in which all of the tracts in Austin share the first 7 digits.  Throughout this article, the last 4 digits will often be used to denote the tract.</li>
+<li>Census Tract End: Ending Neighborhood GEOID number from US 2010 Census Tract (string).  See note above.</li>
+</ul>
+</li>
+</ul>
+<ol start="2">
+<li>Removed 132 empty/none rows.</li>
+<li>Removed 55,000 “OUT OF BOUNDS” rows</li>
+<li>Removed 590,000 excessive Trip distance and Trip Duration rows. The vast majority of the data falls within ‘reasonable’ boundaries for trip distance and duration.  However, there are outliers spread to excessive values.  In the 50-bin histograms below, these excessive values tend to only occur a handful of times. It is not possible for a trip to have a negative duration.  Also, trips longer than 12 hours or 50 miles exceed the expected use for these scooters (the best batteries only last about 30 mi). I contacted the data owner, and they told me that they are working with the vendors to understand the causes of the junky data.  Figures 1 and 2 show the data before and after removing these junky rows.</li>
+<li>Removed Bicycle data, which are out of scope of this analysis.</li>
+</ol>
+<p><img src="img/Figure_1.png" alt="figure"></p>
+<p>Figure 1&ndash;Trip Duration and Trip Distance frequency before removing outliers</p>
+<p><img src="img/figure_2.png" alt="figure"></p>
+<p>Figure 2&ndash;Trip Duration and Trip Distance after removing outliers.</p>
+<h3 id="exploratory-data-analysis">Exploratory Data Analysis</h3>
+<p>Once I had a clean and usable dataset, I used visualizations and statistical modeling to better understand the data.</p>
+<h4 id="usage-visualization">Usage visualization</h4>
+<p>The Jupyter notebook for this section can be found <a href="https://github.com/trevbhatt/predicting_scooter_utilization/blob/master/data_story.ipynb">here</a>.</p>
+<h5 id="usage-by-location">Usage by Location</h5>
+<p>Of the data’s 271 census tracts, usage was heavily centered in certain locations, especially the ‘1100’ census tract in the middle of downtown Austin. In Figure 3, the ‘1100’.  Figure 4 shows a heatmap of census tract usage.</p>
+<p><img src="img/figure_3.png" alt="figure"></p>
+<p>Figure 3 &ndash; Total count of Census Tract Start and End Trips</p>
+<p><img src="img/figure_4.png" alt="figure"></p>
+<p>Figure 4&ndash;Heatmap of census tract ridership</p>
+<p>In Figure 5, trips tend to stay within the central area (the dark blue lines), with a only few exceptions venturing to outer census tract neighborhoods (the light colored lines).  This figure shows only trips in ‘1100’, but this pattern is typical of the high-volume downtown census tracts.</p>
+<p><img src="img/figure_5.png" alt="figure"></p>
+<p>Figure 5&ndash;Trip routes originating in census tract 48453001100</p>
+<h5 id="usage-by-time">Usage by Time</h5>
+<p>Unsurprisingly, the number of rides in a certain time period will vary depending on time of day and day of the week.  In Figure 6, each day of the week has a different sized curve, but each day’s usage peaks in the mid afternoon.</p>
+<p><img src="img/figure_6.png" alt="figure"></p>
+<p>Figure 6&ndash;Total Daily Ridership per Hour</p>
+<p>Most scooter companies require/encourage the chargers to drop off their scooters by 7AM, so this study will focus at a daily resolution, counting on deliveries occurring during the early morning valley shared by each day.</p>
+<h4 id="statistical-modeling">Statistical Modeling</h4>
+<p>The Jupyter notebook for this section can be found <a href="https://github.com/trevbhatt/predicting_scooter_utilization/blob/master/statistical_data_analysis.ipynb">here</a>.</p>
+<p>To get an idea of how the data is distributed, I created a model to simulate a sample of the data using a Markov Chain Monte Carlo (MCMC) method. A better understanding of the distribution will influence the machine learning approaches in the next section.</p>
+<p>Since the data is discrete, I used a Poisson distribution:</p>
+<p><img src="img/equation.png" alt="figure"></p>
+<p>Using PyMC3 to generate posteriors for lambda, I set up the distribution and data so that lambda will also represent the expected daily number of trips .</p>
+<p>It’s clear from the aggregated daily trips in Figure 7 that the expected value in a given day changes as time moves forward. The analysis can be set up to attempt to account for changes in trend over time. To account for this, we can attempt to understand when a change occurred.  That is, at what point (let’s call it tau, the red line in Figure 7) did the behavior change?</p>
+<p><img src="img/figure_7.png" alt="figure"></p>
+<p>Figure 7&ndash;Number of daily trips in census tract 48453001100</p>
+<p>To account for this, we can attempt to understand when this change occurred.  That is, at what point (let’s call it tau, the red line in Figure 7) did the behavior change?</p>
+<p><img src="img/equation_2.png" alt="figure"></p>
+<p>Figure 8 shows the results of the posterior for lambda1, lambda2, and tau for census tract 48453001100.</p>
+<p><img src="img/figure_8.png" alt="figure"></p>
+<p>Figure 8&ndash;Posteriors for Lambda before and after a changepoint at tau.</p>
+<p>Tau falls solidly at 276 days, which would be the the beginning of January 2019.</p>
+<p>The graphs in figure 9 show lambda_1, lambda_2, and tau for the census tracts for which lambda was greater than 50.</p>
+<p><img src="img/figure_9.png" alt="figure"></p>
+<p>Figure 9&ndash;Lambda1, Lambda2, and tau for the busiest census tracts.</p>
+<p>The graph of lambda_2 above creates a predicted daily count of trips for the most popular census  tracts (not yet taking into account any seasonality) .</p>
+<p>Tau is in the upper 200s for most of the census tracts, which may coincide with the steady increase in scooter popularity in 2019.  However, if the increase is indeed steady and not abrupt, choosing a single</p>
+<h3 id="machine-learning-analysis">Machine Learning Analysis</h3>
+<p>The Jupyter notebook for this section can be found <a href="https://github.com/trevbhatt/predicting_scooter_utilization/blob/master/machine_learning_analysis.ipynb">here</a>.</p>
+<h4 id="ridge-regression">Ridge Regression</h4>
+<p>First, I attempted to create a linear model without using time-series.  To try to capture seasonality in the data, I encoded the date column into 374 binary columns to represent year, day of year, day of the month, and day of the week.</p>
+<p>On the 48453001100 census tract, the ridge regression had an poor r2 score (0.355) and a very large mean absolute percent error.  The predicted vs test values are shown in Figure 10, with a dashed line to represent where prediction and test would be equal.</p>
+<p><img src="img/figure_10.png" alt="figure"></p>
+<p>Figure 10&ndash;Ridge Regression Results</p>
+<h4 id="batch-gradient-descent">Batch Gradient Descent</h4>
+<p>Using the same encoded data, I attempted a batch gradient descent method with learning rate and number of iterations as hyperparameters.  These hyperparameters might give me better ‘handles’ to tune the model.</p>
+<p>Even with the quickest convergence, shown in Figure 11, the r2 score was a dismal 0.192, and still resulted in a very large mean absolute error.</p>
+<p><img src="img/figure_11.png" alt="figure"></p>
+<p>Figure 11: Convergence of the batch gradient descent model</p>
+<h4 id="time-series-and-facebook-prophet">Time Series and Facebook Prophet</h4>
+<p>Linear regression having failed me, I turned to time-series.</p>
+<p>Facebook Prophet is a forecasting procedure that makes predictions on time series data.  The major tunable hyperparameters of the Facebook Prophet model are trend, holidays, and seasonality (Letham 7).</p>
+<h5 id="trend-and-changepoints">Trend and Changepoints</h5>
+<p>The first component is Trend.  Facebook Prophet accounts for the way that trends change over time using changepoints in a more sophisticated way than the MCMC methods above.  Instead of picking a tau  for a single changepoint, Facebook Prophet defines a trend slope and searches for places where that slope changes.</p>
+<p>In Figure 13, the changes in the slope of the trend line correspond to changepoints in the general trend of the daily use data.  These changepoints are highlighted in Figure 12.</p>
+<p><img src="img/figure_12.png" alt="figure"></p>
+<p>Figure 12: Regression line and confidence interval of predictions by Facebook Prophet for 48453001100</p>
+<h5 id="holidays-and-south-by-southwest">Holidays and South by Southwest</h5>
+<p>Facebook Prophet then accounts for holidays. At the beginning of March the city of Austin sees a major influx of visitors attending the popular South by Southwest conference.  Facebook Prophet takes a custom dataframe of major events and US holidays and measures their effect on the prediction.  Their effects can be seen in the holidays graph of Figure 12, notice the largest spike at the beginning of March.</p>
+<h5 id="seasonality">Seasonality</h5>
+<p>Third, Seasonality can be specified yearly, monthly, weekly, and daily.  In this model, weekly and yearly seasonality effects are shown in figure 13.</p>
+<p>Not surprisingly, the weekly effect surges on weekend, and there is a general increase in the warm summer months.</p>
+<p><img src="img/figure_13.png" alt="figure"></p>
+<p>Figure  13&ndash; Trend, Holidays, and Weekly and Yearly seasonality</p>
+<h3 id="business-impact">Business Impact</h3>
+<p>Up to this point, the examples have focused on the ‘1100’ census tract.  In reality, micromobility operators will need to understand how to distribute their fleet across multiple census tracts.</p>
+<h4 id="fleet-usage">Fleet Usage</h4>
+<p>The data on which these forecasts are based is the sum total of all scooter operators in Austin. We cannot assume that if we predict 1,000 rides in census tract X, that one operating company could see 1,000 of their scooters used.  However, these numbers can be used to determine where to place a percentage of the fleet.  In Figure 14 I generated an area plot of the forecasted percentage distribution in the top 10 census tracts.</p>
+<p><img src="img/figure_14.png" alt="figure"></p>
+<p>Figure 14&ndash;Recommended fleet distribution.</p>
+<p>Suppose a provider wanted to place scooters more aggressively to increase their share of the market. By default, Facebook Prophet predicts with an 80% uncertainty margin. The lower and upper bounds of the uncertainty could be used to calculate the percentage of fleet to use depending on how aggressive they wanted to be.  For example, setting 48453001100 and 48453000601 as aggressive yields a slightly different composition in Figure 15 than the composition in Figure 14.  The orange and blue sections are thicker than before.  Note that it would not be meaningful to set all census tracts as either ‘aggressive’ or ‘conservative, because the terms are relative to the other census tracts.</p>
+<p><img src="img/figure_15.png" alt="figure"></p>
+<p>Figure 15&ndash;Recommended fleet distribution with two ‘aggressive’ estimates</p>
+<h4 id="daily-dashboard">Daily Dashboard</h4>
+<p>Ideally, this system would be integrated with the scooter operator's mobile app for the employees and contractors who place the scooters. However, to illustrate the business application of the model, I made the distribution into a daily dashboard that shows where in the prediction period the forecast was made, the percent distribution and the number of scooters to deploy for a given fleet size. I arbitrarily chose 1200 as the fleet size and made a prediction for September 30, 2019 to generate the dashboard for that day.</p>
+<p><img src="img/figure_16a.png" alt="figure"></p>
+<p><img src="img/figure_16b.png" alt="figure"></p>
+<p><img src="img/figure_16c.png" alt="figure"></p>
+<h3 id="future-enhancements">Future Enhancements</h3>
+<p>Below are some ideas for future enhancements to the model.</p>
+<ol>
+<li>An hourly model could be used if scooter providers were interested in providing a more dynamically changing fleet distribution.</li>
+<li>Weather data might improve the predictions of the model.  Weather forecasts could be combined with historical weather data to influence the model as a type of ‘holdiay’ seasonality.</li>
+</ol>
+<h3 id="resources">Resources</h3>
+<p>P. Bazin, “Linear Regression: Implementation, Hyperparameters, Comparison - Pavel Bazin: Software Engineering, Machine Learning,” Linear Regression: Implementation, Hyperparameters, Comparison, 26-Jan-2018. [Online]. Available: <a href="http://pavelbazin.com/post/linear-regression-hyperparameters/">http://pavelbazin.com/post/linear-regression-hyperparameters/</a>. [Accessed: Dec-2019].</p>
+<p>Scikit-learn: Machine Learning in Python, Pedregosa et al., JMLR 12, pp. 2825-2830, 2011.</p>
+<p>Taylor SJ, Letham B. 2017. Forecasting at scale. PeerJ Preprints 5:e3190v2 <a href="https://doi.org/10.7287/peerj.preprints.3190v2">https://doi.org/10.7287/peerj.preprints.3190v2</a>
+C. Davidson-Pilon, “Probabilistic-Programming-and-Bayesian-Methods-for-Hackers,” GitHub. [Online]. Available: <a href="https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers">https://github.com/CamDavidsonPilon/Probabilistic-Programming-and-Bayesian-Methods-for-Hackers</a>. [Accessed: Dec-2019].</p>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  <span><a class="menu-item" href="https://trevorb.io/projects/bengali/">&lt; prev | </a></span>
+  
+  
+  <span><a class="menu-item" href="/projects">projects</a></span>
+  
+  
+  <span><a class="menu-item" href="https://trevorb.io/projects/railroad/"> | next &gt;</a></span>
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="https://trevorb.io">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2020. Trevor Bhattacharya. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.62.2</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+      <h6><a href="" aria-label="RSS Feed"><i class="fas fa-rss" aria-hidden="true"></i></a></h6>
+    
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>
+
+

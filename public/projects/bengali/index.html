@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<meta name="description" content="Trevor Bhattacharya">
+<meta name="keywords" content="Trevor Bhattacharya, Data Science,Project Management, PMP">
+
+<base href="https://trevorb.io">
+
+<title>
+  Trevor Bhattacharya - Recognizing Bengali Graphemes using CNNs 
+</title>
+
+<meta name="generator" content="Hugo 0.62.2" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400|Roboto+Slab:400,700|Roboto:300,300i,400,400i,500,500i,700,700i">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">
+<link rel="stylesheet" href="https://trevorb.io/css/main.css">
+<link rel="stylesheet" href="https://trevorb.io/css/custom.css">
+
+
+
+
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="theme-color" content="#ffffff">
+
+</head>
+<body lang="en-US">
+<div class="container">
+
+
+<header class="row text-left title">
+  <h1 class="title">Recognizing Bengali Graphemes using CNNs</h1>
+</header>
+<section id="category-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-left meta">
+       
+      
+    </h6>
+  </div>
+  
+</section>
+<section id="content-pane" class="row">
+  <div class="col-md-12 text-justify content">
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#data-wrangling">Data Wrangling</a>
+      <ul>
+        <li><a href="#dataset">Dataset</a></li>
+        <li><a href="#processing-the-data">Processing the Data</a></li>
+      </ul>
+    </li>
+    <li><a href="#exploratory-data-analysis">Exploratory Data Analysis</a>
+      <ul>
+        <li><a href="#vowel-diacritic-frequency">Vowel Diacritic Frequency</a></li>
+        <li><a href="#consonant-diacritic-frequency">Consonant Diacritic Frequency</a></li>
+      </ul>
+    </li>
+    <li><a href="#deep-learning">Deep Learning</a>
+      <ul>
+        <li><a href="#custom-convolutional-neural-network">Custom Convolutional Neural Network</a></li>
+        <li><a href="#resnet">ResNet</a></li>
+        <li><a href="#model-evaluation">Model Evaluation</a></li>
+      </ul>
+    </li>
+    <li><a href="#conclusion">Conclusion</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</nav>
+    
+    <p><img src="img/header.png" alt="image"></p>
+<h2 id="introduction">Introduction</h2>
+<p>Unlike English, Bengali letters are not separated symbols, but rather a combination of different types of symbols. Bengali ‘letters’ are a combination of at least one of the following: consonant, vowel diacritic, and a consonant diacritic. The combination of these can result in approximately 13,000 possible graphemes.</p>
+<p>The aim of this project is to classify the dataset of handwritten graphemes. This allows computer vision to read Bengali words, with an alphabet that (to me, a native English-speaker) is much more complicated than the latin alphabet.</p>
+<p>Check out the <a href="https://github.com/trevbhatt/bengali">github page</a></p>
+<h2 id="data-wrangling">Data Wrangling</h2>
+<h3 id="dataset">Dataset</h3>
+<p>Bengali.AI provides monochromatic image data that was collected by asking participants to write individual letters on a piece of paper.
+The image data is already split into test and training data provided by kaggle. The image data is provided in .parquet Apache data structure. Each image is 137 x 236 pixels Metadata for both training and testing is also provided in CSVs:</p>
+<ul>
+<li>Source: <a href="https://www.kaggle.com/c/bengaliai-cv19">https://www.kaggle.com/c/bengaliai-cv19</a></li>
+<li>Size: 200876 rows and images, with 7 columns of metadata for each</li>
+<li>Timeframe: N/A, currently running Kaggle competition</li>
+<li>Metadata CSV Columns:
+<ul>
+<li>Image ID - string ID of the image</li>
+<li>Grapheme_root - integer (0, 168)</li>
+<li>Vowel_diacritic - integer indicating the vowel diacritic (0, 10)</li>
+<li>Consonant_diacritic - integer (0, 6)</li>
+<li>Grapheme - printed bengali script letter</li>
+</ul>
+</li>
+</ul>
+<p>Below are some examples of a few images from the .parquet files:
+<img src="img/bangla_1.png" alt="figure">
+<img src="img/bangla_2.png" alt="figure">
+<img src="img/bangla_3.png" alt="figure"></p>
+<h3 id="processing-the-data">Processing the Data</h3>
+<p>The Apache Parquet files provided by Bengali.AI are quite large and difficult to load to a Pandas dataframe. Instead, the data was loaded to the GPU using PyTorch.</p>
+<p>To load the data into the PyTorch model, I constructed a custom dataset class that transformed the image from a rectangle into a square. A square shape simplifies some of the convolutional neural network settings.</p>
+<h2 id="exploratory-data-analysis">Exploratory Data Analysis</h2>
+<p>To begin with, I investigated the frequency of each grapheme root, vowel diacritic, and consonant diacritic.
+Grapheme Root Frequency
+There are 168 possible grapheme roots. Figure 1 shows the distribution of each root.</p>
+<p><img src="img/grapheme_freq.png" alt="figure"></p>
+<p>Figure 1&ndash;Frequency of grapheme roots</p>
+<p>It’s clear that some roots occur more often than others; however, none of the roots are completely unrepresented.</p>
+<h3 id="vowel-diacritic-frequency">Vowel Diacritic Frequency</h3>
+<p>Vowel diacritic frequency can be seen in Figure 2. Note that a value of ‘0’ in this case indicates the absence of a vowel diacritic from the grapheme.</p>
+<p><img src="img/vowel_freq.png" alt="figure"></p>
+<p>Figure 2&ndash;Frequency of vowel diacritics</p>
+<h3 id="consonant-diacritic-frequency">Consonant Diacritic Frequency</h3>
+<p><img src="img/consonant_freq.png" alt="figure"></p>
+<p>Figure 3&ndash;Consonant Diacritic</p>
+<p>In Figure 3, most graphemes do not include a consonant diacritic (i.e. item ‘0’).</p>
+<h2 id="deep-learning">Deep Learning</h2>
+<h3 id="custom-convolutional-neural-network">Custom Convolutional Neural Network</h3>
+<p>First, I created a custom Convolutional Neural Network to establish a baseline.</p>
+<h4 id="network-structure">Network Structure</h4>
+<p>Figure 4 shows the structure of the neural network:</p>
+<ul>
+<li>2 Convolutional layers (each transformed with a rectified linear unit and max pooling)</li>
+<li>3 Fully connected linear layers</li>
+</ul>
+<p>The figure shows each layer and transformation, finally outputting a value for the most likely category. In this example, the image is Grapheme Root 37.</p>
+<p><img src="img/cnn_model.png" alt="figure"></p>
+<p>Figure 4&ndash;Neural Network Structure</p>
+<h4 id="accuracy-and-loss">Accuracy and Loss</h4>
+<p>Over 60 epochs, the network achieved the following validation accuracies:</p>
+<ul>
+<li>Grapheme Root: 70%</li>
+<li>Vowel Diacritic: 88%</li>
+<li>Consonant Diacritic: 91%</li>
+</ul>
+<p>Figures 5, 6 and 7 show the loss over the epochs for the Grapheme Root, Vowel Diacritic, and Consonant Diacritic Respectively. For each model, most of the loss reduction occurs in the first ten epochs; however, the next 50 epochs still show small decreases.</p>
+<p><img src="img/grapheme_loss.png" alt="figure"></p>
+<p>Figure 5&ndash;Grapheme root loss</p>
+<p><img src="img/vowel_loss.png" alt="figure"></p>
+<p>Figure 6&ndash;Vowel diacritic loss</p>
+<p><img src="img/consonant_loss.png" alt="figure"></p>
+<p>Figure 7&ndash;Consonant Diacritic loss</p>
+<h4 id="potential-model-improvements">Potential Model Improvements</h4>
+<p>Future efforts and improvements to this model could include:</p>
+<ul>
+<li>Transfer learning from other models with similar shapes (such as Hindi).</li>
+<li>Further adjustment of Model Parameters
+<ul>
+<li>Additional Convolutional layers</li>
+<li>Additional Fully Connected layers</li>
+<li>Optimized batch size</li>
+<li>Different Optimize strategies (ie Adam vs SGD)</li>
+</ul>
+</li>
+</ul>
+<h3 id="resnet">ResNet</h3>
+<p>Using a Residual Network to feed the results of layers into later layers as described in <a href="https://arxiv.org/pdf/1512.03385.pdf">t​his paper​</a> I was able to greatly improve the accuracy of the model over just 10 epochs.
+The structure of the ResNet as shown in Figure 8 repeats multiple times. In this case, I used “ResNet18” loaded from PyTorch. This pattern repeats 3 times, with 3 additional convolution layers (not shown).</p>
+<p><img src="img/banglanet_resnet.png" alt="figure"></p>
+<p>Figure 8 - Repeating Pattern in ResNet</p>
+<h3 id="model-evaluation">Model Evaluation</h3>
+<h4 id="accuracy">Accuracy</h4>
+<p>The below table shows the results from both models</p>
+<p><img src="img/accuracy_table.png" alt="table"></p>
+<h4 id="grad-cam">Grad-Cam</h4>
+<p>I modified Jacob Gildenblat’s PyTorch Implementation of Grad-Cam  (as described by Selvaraju, et al.) to visualize the ‘hotspots’ in images processed by my neural network.  Below are 5 examples of the results for each character types.</p>
+<p><img src="img/gradcam_all.png" alt="table"></p>
+<p>The hotspots indicate areas of the image that most affected the classification. For my CNN, these appear somewhat noisy, but they do show the network looking at different parts of the image to make the identification. With ResNet18’s deeper network the hotspots become more defined.</p>
+<p>Note that even the class 0 consonant diacritics show hotspots, because 0 was coded as a category, so the network appears to be identifying the curves where a consonant diacritic might be.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Unsurprisingly, the deeper ResNet18 model performed overwhelmingly better than my Convolutional Neural Network. Using Grad-Cam helped to visualize the inner workings of both models, and the keys to identify the images.
+Future efforts and improvements both my model and the ResNet implementation could include:</p>
+<ul>
+<li>Transfer learning from other models with similar shapes (such as Hindi).</li>
+<li>Further adjustment of Model Parameters
+<ul>
+<li>Additional Convolutional layers for my CNN</li>
+<li>Additional Fully Connected layers</li>
+<li>Optimize test more batch sizes</li>
+<li>Different optimization strategies (ie Adam vs SGD)</li>
+<li>Testing to find optimum number of layers and the speed tradeoff. (ResNet18 vs ResNet34 vs. ResNet 108)</li>
+</ul>
+</li>
+</ul>
+<h2 id="resources">Resources</h2>
+<p>Paszke, Adam and Gross, Sam and Chintala, Soumith and Chanan, Gregory and Yang, Edward and DeVito, Zachary and Lin, Zeming and Desmaison, Alban and Antiga, Luca and Lerer, Adam. A​ utomatic differentiation in PyTorch. “NIPS-W”. 2017</p>
+<p>Kaiming He and Xiangyu Zhang and Shaoqing Ren and Jian Sun. D​eep Residual Learning for Image Recognition​ 2015</p>
+
+  </div>
+</section>
+<section id="tag-pane" class="row meta">
+  
+  <div class="col-md-12">
+    <h6 class="text-right meta">
+      
+    </h6>
+  </div>
+  
+</section>
+
+
+
+
+
+
+
+
+<section id="menu-pane" class="row menu text-center">
+  
+  
+  
+  <span><a class="menu-item" href="/projects">projects</a></span>
+  
+  
+  <span><a class="menu-item" href="https://trevorb.io/projects/scooters/"> | next &gt;</a></span>
+  
+  
+  <h4 class="text-center"><a class="menu-item" href="https://trevorb.io">home</a></h4>
+</section>
+
+
+
+<footer class="row text-center footer">
+  <hr />
+  
+  <h6 class="text-center copyright">© 2020. Trevor Bhattacharya. <a href="http://creativecommons.org/licenses/by/3.0/">Some Rights Reserved</a>.</h6>
+  
+  <h6 class="text-center powered">Powered by <a href="https://gohugo.io/">Hugo  v0.62.2</a> &amp; <a href="https://github.com/shenoybr/hugo-goa">Goa</a>.</h6>
+  
+      
+      <h6><a href="" aria-label="RSS Feed"><i class="fas fa-rss" aria-hidden="true"></i></a></h6>
+    
+  
+</footer>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  
+
+<script type="text/javascript">
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="js/main.js"></script>
+<script src="js/custom.js"></script>
+</body>
+</html>
+
+

@@ -1,0 +1,67 @@
+## Basic Configuration
+
+baseurl = "https://trevorb.io"
+builddrafts = false
+canonifyurls = false
+languageCode = "en-US"
+
+contentdir = "content"
+layoutdir = "layouts"
+publishdir = "public"
+
+author = "Trevor Bhattacharya"
+title = "Trevor Bhattacharya"
+
+theme = "hugo-goa"
+
+## Hugo Built-in Features
+# disqusShortname = "https-shenoybr-github-io-hugo-goa-demo" # Comment out to disable Disqus.
+# googleAnalytics = "XYZ"
+# enableRobotsTXT = true
+
+## Site Settings
+[params]
+author = "Trevor Bhattacharya"
+intro = "Making things work better with data."
+description = "Hey, I'm Trevor. It's nice to meet you."
+authorimage = "profile_square.jpeg"
+dateformat = "Jan 2, 2006"
+
+## Site Meta Settings
+[params.meta]
+description = "Trevor Bhattacharya"
+keywords = "Trevor Bhattacharya, Data Science,Project Management, PMP"
+
+## Social Accounts
+[params.social]
+github = "trevbhatt"
+instagram = "trevbhatt"
+linkedin = "trevbhatt"
+twitter = "trevbhatt"
+email = "trevor@trevorb.io"
+
+## Extras
+[params.extra]
+copyright = "© 2020. Trevor Bhattacharya. [Some Rights Reserved](http://creativecommons.org/licenses/by/3.0/)."
+poweredby = true
+highlightjs = true
+socialmarkup = true
+toc = true
+displayrssicon = true
+
+## Main Menu
+[[menu.main]]
+    name = "about"
+    weight = 100
+    identifier = "about"
+    url = "/about/"
+[[menu.main]]
+    name = "projects"
+    identifier = "projects"
+    weight = 200
+    url = "/projects/"
+[[menu.main]]
+    name = "resume"
+    identifier = "resume"
+    weight = 300
+    url = "https://resume.creddle.io/resume/7d3dtecbymo"
