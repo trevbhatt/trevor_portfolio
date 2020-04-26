@@ -40,5 +40,14 @@ Project description: Now ubiquitous, the electric scooter cruises through bike l
 The aim of this project is to classify the dataset of handwritten graphemes. This allows computer vision to read Bengali words, with an alphabet that (to me, a native English-speaker) is much more complicated than the latin alphabet.</description>
     </item>
     
+    <item>
+      <title>Unna Dashboard</title>
+      <link>https://trevorb.io/projects/unna/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://trevorb.io/projects/unna/</guid>
+      <description> </description>
+    </item>
+    
   </channel>
 </rss>
